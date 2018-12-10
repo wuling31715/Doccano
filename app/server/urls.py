@@ -23,7 +23,7 @@ urlpatterns = [
     path('projects/', ProjectsView.as_view(), name='projects'),
 
     path('projects/<int:project_id>/', ProjectOverview.as_view(), name='overview'),
-    # path('projects/<int:project_id>/data', name='data'),
+    path('projects/<int:project_id>/data', DatasetView.as_view(), name='data'),
     # path('projects/<int:project_id>/download', DataDownload.as_view(), name='download'),
     # path('projects/<int:project_id>/', ProjectView.as_view(), name='annotation'),
     # path('projects/<int:project_id>/docs/', DatasetView.as_view(), name='dataset'),

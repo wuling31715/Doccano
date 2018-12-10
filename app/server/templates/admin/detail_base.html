@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load static %}
+{% load widget_tweaks %}
+{% block content %}
+<section class="container">
+  <div class="columns features">
+    <div class="intro column is-10 is-offset-1">
+      <div class="card">
+        <div class="card-content project-image" style="min-height:200px;">
+          <div class="content">
+            <h3 class="has-text-white">Here is a project name</h3>
+          </div>
+        </div>
+        <div class="card-footer">
+          <nav class="navbar" style="width:100%;background-color:white;min-height:0;">
+            <div class="tabs" style="margin-bottom:0;">
+              <ul>
+                <li>
+                  <a href="{% url 'overview' view.kwargs.project_id %}">
+                    Overview
+                  </a>
+                </li>
+                <li>
+                  <a href="https://bulma.io/documentation/components/dropdown">
+                    Data
+                  </a>
+                </li>
+                <li>
+                  <a href="">
+                    Label
+                  </a>
+                </li>
+                <li>
+                  <a href="">
+                    Scheme
+                  </a>
+                </li>
+                <li>
+                  <a href="https://bulma.io/documentation/components/menu">
+                    Stats
+                  </a>
+                </li>
+                <li>
+                  <a href="https://bulma.io/documentation/components/message">
+                    Users
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div class="navbar-end">
+              <div class="navbar-item" style="padding:0;">
+                <!--<div class="buttons">-->
+                <a class="button is-primary" style="border-radius:0;min-height:100%">
+                  Start Labeling
+                </a>
+                <!--</div>-->
+              </div>
+            </div>
+          </nav>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="columns">
+    <div class="column is-10 is-offset-1">
+      <div class="card events-card">
+        <header class="card-header">
+          <p class="card-header-title">
+            {% block header-title %}{% endblock %}
+          </p>
+        </header>
+        <div class="card-content">
+          <div class="content">
+              {% block project-content %}{% endblock %}
+            <p>
+              An existential problem for any major website today is how to handle toxic and divisive content. Quora wants to tackle this problem head-on to keep their platform a place where users can feel safe sharing their knowledge with the world.
+            </p>
+            <p>
+              Quora is a platform that empowers people to learn from each other. On Quora, people can ask questions and connect with others who contribute unique insights and quality answers. A key challenge is to weed out insincere questions -- those founded upon false premises, or that intend to make a statement rather than look for helpful answers.
+            </p>
+            <p>
+              In this competition, Kagglers will develop models that identify and flag insincere questions. To date, Quora has employed both machine learning and manual review to address this problem. With your help, they can develop more scalable methods to detect toxic and misleading content.
+            </p>
+            <p>
+              Here's your chance to combat online trolls at scale. Help Quora uphold their policy of “Be Nice, Be Respectful” and continue to be a place for sharing and growing the world’s knowledge.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+{% endblock %}
+{% block footer %}
+{% endblock %}

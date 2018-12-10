@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views import View
-from django.views.generic import TemplateView, CreateView
+from django.views.generic import TemplateView, CreateView, DetailView
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 
@@ -32,7 +32,7 @@ class ProjectsView(LoginRequiredMixin, CreateView):
 
 
 class ProjectOverview(LoginRequiredMixin, TemplateView):
-    template_name = 'admin/project.html'
+    template_name = 'admin/overview.html'
 
 
 class DatasetView(SuperUserMixin, LoginRequiredMixin, ListView):

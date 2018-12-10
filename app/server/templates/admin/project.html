@@ -1,0 +1,61 @@
+{% extends "base.html" %} {% load static %} {% load widget_tweaks %} {% block content %}
+<section class="container">
+    <div class="columns features">
+        <div class="intro column is-10 is-offset-1">
+            <div class="card">
+                <div class="card-content project-image" style="min-height:200px;">
+                    <div class="content">
+                        <h3 class="has-text-white">Here is a project name</h3>
+                        <p>
+                            <span class="has-text-white">Updated 100 days ago</span>
+                        </p>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <nav class="navbar" style="width:100%;background-color:white;min-height:0;">
+                        <div class="tabs" style="margin-bottom:0;">
+                            <ul>
+                                <li>
+                                    <a href="https://bulma.io/documentation/components/breadcrumb">
+                                        Overview
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://bulma.io/documentation/components/card">
+                                        Upload
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://bulma.io/documentation/components/dropdown">
+                                        Download
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://bulma.io/documentation/components/menu">
+                                        Statistics
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="https://bulma.io/documentation/components/message">
+                                        Users
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="navbar-end">
+                            <div class="navbar-item" style="padding:0;">
+                                <!--<div class="buttons">-->
+                                <a class="button is-primary" style="border-radius:0;min-height:100%">
+                                    Start Labeling
+                                </a>
+                                <!--</div>-->
+                            </div>
+                        </div>
+                    </nav>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} {% block footer %} {% endblock %}

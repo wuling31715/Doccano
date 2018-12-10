@@ -3,7 +3,7 @@
 {% load widget_tweaks %}
 {% block content %}
 <section class="container" id="mail-app">
-  <div class="columns features">
+  <div class="columns features" style="margin-bottom:0">
     <div class="intro column is-10 is-offset-1">
       <div class="card">
         <div class="card-content project-image" style="min-height:200px;">
@@ -11,7 +11,7 @@
             <h3 class="has-text-white">Here is a project name</h3>
           </div>
         </div>
-        <div class="card-footer">
+        <div class="card-footer" style="border-top:none;">
           <nav class="navbar" style="width:100%;background-color:white;min-height:0;">
             <div class="tabs" style="margin-bottom:0;">
               <ul>
@@ -31,7 +31,7 @@
                   </a>
                 </li>
                 <li>
-                  <a href="">
+                  <a href="{% url 'guideline' view.kwargs.project_id %}">
                     Scheme
                   </a>
                 </li>
@@ -64,24 +64,7 @@
       </div>
     </div>
   </div>
-
-  <div class="columns">
-    <div class="column is-10 is-offset-1">
-      <div class="card events-card">
-        <header class="card-header">
-          <p class="card-header-title">
-            {% block header-title %}{% endblock %}
-          </p>
-        </header>
-        <div class="card-content">
-          <div class="content">
-            {% block project-content %}{% endblock %}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
+  {% block project-content %}{% endblock %}
 </section>
 {% endblock %}
 {% block footer %}

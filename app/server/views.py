@@ -16,7 +16,8 @@ from django.contrib import messages
 
 from .permissions import SuperUserMixin
 from .forms import ProjectForm
-from .models import Document, Project
+from mixer.backend.django import mixer
+from .models import Document, Project, Label, SequenceAnnotation
 from app import settings
 
 logger = logging.getLogger(__name__)
@@ -108,10 +109,24 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
 
     def json_to_documents(self, project, file, text_key='text'):
         parsed_entries = (json.loads(line) for line in file)
-      
+        
         return (
             Document(text=entry[text_key], metadata=self.extract_metadata_json(entry, text_key), project=project)
+
             for entry in parsed_entries
+        )
+
+    def json_to_annotations(self, project, file, text_key='text'):
+        parsed_entries = (json.loads(line) for line in file)
+        a = mixer.blend('server.SequenceAnnotation')
+        print(a.document)
+        print(a.user)
+            
+        return (
+
+            SequenceAnnotation(document=a.document,user=a.user,label=a.label,start_offset=a.start_offset,end_offset=a.end_offset)
+
+            for entry in parsed_entries                            
         )
 
     def post(self, request, *args, **kwargs):
@@ -125,14 +140,23 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
 
             elif import_format == 'json':
                 documents = self.json_to_documents(project, file)
+                annotations = self.json_to_annotations(project, file)
 
             batch_size = settings.IMPORT_BATCH_SIZE
             while True:
+                # documents
                 batch = list(it.islice(documents, batch_size))
+                print(batch)
                 if not batch:
                     break
-
                 Document.objects.bulk_create(batch, batch_size=batch_size)
+                # annotation
+                batch2 = list(it.islice(annotations, batch_size))
+                print(batch2)
+                if not batch2:
+                    break
+                Document.objects.bulk_create(batch2, batch_size=batch_size)
+
             return HttpResponseRedirect(reverse('dataset', args=[project.id]))
         except DataUpload.ImportFileError as e:
             messages.add_message(request, messages.ERROR, e.message)

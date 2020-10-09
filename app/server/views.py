@@ -13,11 +13,14 @@ from django.views.generic import TemplateView, CreateView
 from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+
 
 from .permissions import SuperUserMixin
 from .forms import ProjectForm
 from mixer.backend.django import mixer
-from .models import Document, Project, Label, SequenceAnnotation
+from .models import Document, Project, Label, Annotation, SequenceAnnotation
 from app import settings
 
 logger = logging.getLogger(__name__)
@@ -116,15 +119,11 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
             for entry in parsed_entries
         )
 
-    def json_to_annotations(self, project, file, text_key='text'):
-        parsed_entries = (json.loads(line) for line in file)
-        a = mixer.blend('server.SequenceAnnotation')
-        print(a.document)
-        print(a.user)
-            
+    def json_to_annotations(self, User, Label, project, file):
+        parsed_entries = (json.loads(line) for line in file)            
         return (
 
-            SequenceAnnotation(document=a.document,user=a.user,label=a.label,start_offset=a.start_offset,end_offset=a.end_offset)
+            SequenceAnnotation(user=User,label=Label,start_offset=0,end_offset=1)
 
             for entry in parsed_entries                            
         )
@@ -135,15 +134,24 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         try:
             file = request.FILES['file'].file
             documents = []
+            annotations = []
             if import_format == 'csv':
                 documents = self.csv_to_documents(project, file)
 
             elif import_format == 'json':
                 documents = self.json_to_documents(project, file)
-                annotations = self.json_to_annotations(project, file)
+                l = Label(text="Test",project=project)
+                u = authenticate(username='john', password='root')
+                annotations = self.json_to_annotations(u, l, project, file)
 
             batch_size = settings.IMPORT_BATCH_SIZE
             while True:
+                # annotation
+                batch2 = list(it.islice(annotations, batch_size))
+                print(batch2)
+                if not batch2:
+                    break
+                Document.objects.bulk_create(batch2, batch_size=batch_size)
                 # documents
                 batch = list(it.islice(documents, batch_size))
                 print(batch)

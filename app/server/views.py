@@ -23,10 +23,15 @@ from mixer.backend.django import mixer
 from .models import Document, Project, Label, Annotation, SequenceAnnotation
 from app import settings
 
+from django.db import connection
+
 logger = logging.getLogger(__name__)
 
 
 class IndexView(TemplateView):
+    with connection.cursor() as cursor:
+        print(cursor.execute('insert into server_sequenceannotation ("start_offset" , "end_offset" , "document_id", "label_id" , "user_id") values (2, 10, 1, 1, 1); select last_insert_rowid() from server_sequenceannotation;'))
+        print(cursor.fetchall())
     template_name = 'index.html'
 
 

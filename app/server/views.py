@@ -119,15 +119,6 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
             for entry in parsed_entries
         )
 
-    def json_to_annotations(self, User, Label, project, file):
-        parsed_entries = (json.loads(line) for line in file)            
-        return (
-
-            SequenceAnnotation(user=User,label=Label,start_offset=0,end_offset=1)
-
-            for entry in parsed_entries                            
-        )
-
     def post(self, request, *args, **kwargs):
         project = get_object_or_404(Project, pk=kwargs.get('project_id'))
         import_format = request.POST['format']
@@ -140,30 +131,14 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
 
             elif import_format == 'json':
                 documents = self.json_to_documents(project, file)
-                l = Label(text="Test",project=project)
-                u = authenticate(username='john', password='root')
-                annotations = self.json_to_annotations(u, l, project, file)
 
             batch_size = settings.IMPORT_BATCH_SIZE
             while True:
-                # annotation
-                batch2 = list(it.islice(annotations, batch_size))
-                print(batch2)
-                if not batch2:
-                    break
-                Document.objects.bulk_create(batch2, batch_size=batch_size)
                 # documents
                 batch = list(it.islice(documents, batch_size))
-                print(batch)
                 if not batch:
                     break
                 Document.objects.bulk_create(batch, batch_size=batch_size)
-                # annotation
-                batch2 = list(it.islice(annotations, batch_size))
-                print(batch2)
-                if not batch2:
-                    break
-                Document.objects.bulk_create(batch2, batch_size=batch_size)
 
             return HttpResponseRedirect(reverse('dataset', args=[project.id]))
         except DataUpload.ImportFileError as e:

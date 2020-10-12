@@ -107,11 +107,12 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         else:
             return []
 
-    def extract_entity_json(self, entry, text_key):
+    def extract_metadata_json(self, entry, text_key):
         copy = entry.copy()
-        # del copy[text_key]
+        del copy[text_key]
         try: 
-            return copy["entities"]
+            # return copy["entities"]
+            return json.dumps(copy)
         except:
             return {}
 
@@ -119,7 +120,7 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         parsed_entries = (json.loads(line) for line in file)
         
         return (
-            Document(text=entry[text_key], metadata=self.extract_entity_json(entry, text_key), project=project)
+            Document(text=entry[text_key], metadata=self.extract_metadata_json(entry, text_key), project=project)
 
             for entry in parsed_entries
         )
@@ -148,14 +149,17 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                 if not batch:
                     break
                 Document.objects.bulk_create(batch, batch_size=batch_size)
-
-            with connection.cursor() as cursor:
-                cursor.execute('select * from server_document;')
-                server_document = cursor.fetchall()
-                document_id = server_document[-1][0]
-                annotations_list = eval(server_document[-1][-1])
-                for annotation in annotations_list:
-                    cursor.execute('insert into server_sequenceannotation ("prob", "manual", "start_offset", "end_offset", "document_id", "label_id", "user_id") values ({}, {}, {}, {}, {}, {}, {});'.format(0.0, 0, annotation[0], annotation[1], document_id, label_dict[annotation[2]], 1))
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute('select * from server_document;')
+                    server_document = cursor.fetchall()
+                    document_id = server_document[-1][0]
+                    annotations_list = eval(server_document[-1][-1])['entities']
+                    print(annotations_list)
+                    for annotation in annotations_list:
+                        cursor.execute('insert into server_sequenceannotation ("prob", "manual", "start_offset", "end_offset", "document_id", "label_id", "user_id") values ({}, {}, {}, {}, {}, {}, {});'.format(0.0, 0, annotation[0], annotation[1], document_id, label_dict[annotation[2]], 1))
+            except:
+                pass
 
             return HttpResponseRedirect(reverse('dataset', args=[project.id]))
         except DataUpload.ImportFileError as e:

@@ -28,22 +28,6 @@ Final demo is one of the sequence to sequence tasks, machine translation. Since 
 
 ## Deployment
 
-### Azure
-
-Doccano can be deployed to Azure ([Web App for Containers](https://azure.microsoft.com/en-us/services/app-service/containers/) +
-[PostgreSQL database](https://azure.microsoft.com/en-us/services/postgresql/)) by clicking on the button below:
-
-[![Deploy to Azure](https://azuredeploy.net/deploybutton.svg)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fchakki-works%2Fdoccano%2Fmaster%2Fazuredeploy.json)
-
-### Heroku
-
-Doccano can be deployed to [Heroku](https://www.heroku.com/) by following these steps:
-
-```bash
-heroku create
-heroku stack:set container
-git push heroku master
-```
 
 ## Features
 
@@ -68,11 +52,7 @@ cd doccano
 
 To install doccano, there are two options:
 
-**Option1: Pull the Docker image**
 
-```bash
-docker pull chakkiworks/doccano
-```
 
 **Option2: Setup Python environment**
 
@@ -133,19 +113,6 @@ Let’s start the development server and explore it.
 
 Depending on your installation method, there are two options:
 
-**Option1: Running the Docker image as a Container**
-
-First, run a Docker container:
-
-```bash
-docker run -d --name doccano -p 8000:80 chakkiworks/doccano
-```
-
-Then, execute `create-admin.sh` script for creating a superuser.
-
-```bash
-docker exec doccano tools/create-admin.sh "admin" "admin@example.com" "password"
-```
 
 **Option2: Running Django development server**
 

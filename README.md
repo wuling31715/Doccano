@@ -22,7 +22,8 @@ First demo is one of the sequence labeling tasks, named-entity recognition. You 
 
 * Python 3.6+
 * Django 2.0.5+
-* Node.js
+* Node.js v14.13.0+
+* npm 6.14.8+
 * Vue.js
 * Google Chrome(highly recommended)
 
@@ -31,7 +32,7 @@ First demo is one of the sequence labeling tasks, named-entity recognition. You 
 First of all, you have to clone the repository:
 
 ```bash
-git clone git@github.com:wuling31715/doccano.git
+git clone https://github.com/wuling31715/doccano.git
 cd doccano
 ```
 

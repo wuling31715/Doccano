@@ -124,7 +124,7 @@ After creating a project, you will see the "Import Data" page, or click `Import 
 
 You can upload two types of files:
 - `CSV file`: file must contain a header with a `text` column or be one-column csv file.
-- `JSON file`: each line contains a JSON object with a `text` key. JSON format supports line breaks rendering.
+- `JSON file`: each line contains a JSON object with a `text` key. JSON format supports line breaks rendering. (recommended)
 
 > Notice: Doccano won't render line breaks in annotation page for sequence labeling task due to the indent problem, but the exported JSON file still contains line breaks.
 

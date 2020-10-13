@@ -21,7 +21,7 @@ First demo is one of the sequence labeling tasks, named-entity recognition. You 
 ## Requirements
 
 * Python 3.6+
-* django 2.0.5+
+* Django 2.0.5+
 * Node.js
 * Vue.js
 * Google Chrome(highly recommended)

@@ -161,7 +161,10 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
             parsed_entries = (json.loads(line) for line in file)
             for entry in parsed_entries:
                 self.insert_document(entry, project_id)
-                self.insert_annotation(label_dict, project_id)
+                try:
+                    self.insert_annotation(label_dict, project_id)
+                except:
+                    pass
  
             return HttpResponseRedirect(reverse('dataset', args=[project.id]))
         except DataUpload.ImportFileError as e:

@@ -91,7 +91,7 @@ Superuser created successfully.
 Let’s start the development server and explore it.
 
 ```bash
-python manage.py runserver [port]
+python manage.py runserver [port] // default = 8000
 ```
 
 Now, open a Web browser and go to <http://127.0.0.1:8000/login/>. You should see the login screen:

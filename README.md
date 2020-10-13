@@ -10,6 +10,8 @@ You can enjoy [annotation demo](http://doccano.herokuapp.com).
 
 First demo is one of the sequence labeling tasks, named-entity recognition. You just select text spans and annotate it. Since doccano supports shortcut key, so you can quickly annotate text spans.
 
+![Named Entity Recognition](./docs/named_entity_annotation.gif)
+
 ## Features
 
 * Collaborative annotation

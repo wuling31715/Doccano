@@ -118,58 +118,59 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
 
     def json_to_documents(self, project, file, text_key='text'):
         parsed_entries = (json.loads(line) for line in file)
-        
         return (
             Document(text=entry[text_key], metadata=self.extract_metadata_json(entry, text_key), project=project)
-
             for entry in parsed_entries
         )
-
-    def post(self, request, *args, **kwargs):
-        project = get_object_or_404(Project, pk=kwargs.get('project_id'))
-        import_format = request.POST['format']
+    
+    def insert_document(self, entry, project_id):
         with connection.cursor() as cursor:
-            cursor.execute('select * from server_label;')
+            text = entry['text']
+            metadata = self.extract_metadata_json(entry, 'text')
+            command = """insert into server_document ('text', 'project_id', 'metadata') values (\'{}\', {}, \'{}\');""".format(text, project_id, metadata)
+            cursor.execute(command)
+
+    def label_text_to_id(self, project_id):
+        with connection.cursor() as cursor:
+            command = 'select * from server_label where project_id = {};'.format(project_id)
+            cursor.execute(command)
             server_label = cursor.fetchall()
             label_dict = dict()
             for label in server_label:
                 label_dict[label[1]] = label[0]
+        return label_dict
+
+    def insert_annotation(self, label_dict, project_id):
+        with connection.cursor() as cursor:
+            command = 'select * from server_document where project_id = {};'.format(project_id)
+            cursor.execute(command)
+            server_document = cursor.fetchall()
+            document_id = server_document[-1][0]
+            annotations_list = eval(server_document[-1][-1])['entities']
+            for annotation in annotations_list:
+                command = """insert into server_sequenceannotation ("prob", "manual", "start_offset", "end_offset", "document_id", "label_id", "user_id") values ({}, {}, {}, {}, {}, {}, {});""".format(0.0, 0, annotation[0], annotation[1], document_id, label_dict[annotation[2]], 1)
+                cursor.execute(command)
+
+    def post(self, request, *args, **kwargs):
+        project = get_object_or_404(Project, pk=kwargs.get('project_id'))
+        project_id = kwargs.get('project_id')
+        import_format = request.POST['format']    
+        label_dict = self.label_text_to_id(project_id)    
         try:
             file = request.FILES['file'].file
-            documents = []
-            if import_format == 'csv':
-                documents = self.csv_to_documents(project, file)
-
-            elif import_format == 'json':
-                documents = self.json_to_documents(project, file)
-            
-            batch_size = settings.IMPORT_BATCH_SIZE
-            while True:
-                batch = list(it.islice(documents, batch_size))
-                if not batch:
-                    break
-                Document.objects.bulk_create(batch, batch_size=batch_size)
-            try:
-                with connection.cursor() as cursor:
-                    cursor.execute('select * from server_document;')
-                    server_document = cursor.fetchall()
-                    document_id = server_document[-1][0]
-                    annotations_list = eval(server_document[-1][-1])['entities']
-                    print(annotations_list)
-                    for annotation in annotations_list:
-                        cursor.execute('insert into server_sequenceannotation ("prob", "manual", "start_offset", "end_offset", "document_id", "label_id", "user_id") values ({}, {}, {}, {}, {}, {}, {});'.format(0.0, 0, annotation[0], annotation[1], document_id, label_dict[annotation[2]], 1))
-            except:
-                pass
-
+            parsed_entries = (json.loads(line) for line in file)
+            for entry in parsed_entries:
+                self.insert_document(entry, project_id)
+                self.insert_annotation(label_dict, project_id)
+ 
             return HttpResponseRedirect(reverse('dataset', args=[project.id]))
         except DataUpload.ImportFileError as e:
             messages.add_message(request, messages.ERROR, e.message)
             return HttpResponseRedirect(reverse('upload', args=[project.id]))
         except Exception as e:
             logger.exception(e)
-            messages.add_message(request, messages.ERROR, 'Something went wrong')
+            messages.add_message(request, messages.ERROR, e)
             return HttpResponseRedirect(reverse('upload', args=[project.id]))
-
 
 class DataDownload(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/dataset_download.html'
@@ -191,7 +192,7 @@ class DataDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
             return response
         except Exception as e:
             logger.exception(e)
-            messages.add_message(request, messages.ERROR, "Something went wrong")
+            messages.add_message(request, messages.ERROR, e)
             return HttpResponseRedirect(reverse('download', args=[project.id]))
 
     def get_csv(self, filename, docs):

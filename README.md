@@ -2,6 +2,14 @@
 
 doccano is an open source text annotation tool for human. It provides annotation features for text classification, sequence labeling and sequence to sequence. So, you can create labeled data for sentiment analysis, named entity recognition, text summarization and so on. Just create project, upload data and start annotation. You can build dataset in hours.
 
+## Demo
+
+You can enjoy [annotation demo](http://doccano.herokuapp.com).
+
+### [Named entity recognition](https://doccano.herokuapp.com/demo/named-entity-recognition/)
+
+First demo is one of the sequence labeling tasks, named-entity recognition. You just select text spans and annotate it. Since doccano supports shortcut key, so you can quickly annotate text spans.
+
 ## Features
 
 * Collaborative annotation

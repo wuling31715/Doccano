@@ -39,6 +39,8 @@ Final demo is one of the sequence to sequence tasks, machine translation. Since 
 
 * Python 3.6+
 * django 2.0.5+
+* Node.js
+* Vue.js
 * Google Chrome(highly recommended)
 
 ## Installation
@@ -46,17 +48,11 @@ Final demo is one of the sequence to sequence tasks, machine translation. Since 
 First of all, you have to clone the repository:
 
 ```bash
-git clone https://github.com/chakki-works/doccano.git
+git clone git@github.com:wuling31715/doccano.git
 cd doccano
 ```
 
-To install doccano, there are two options:
-
-
-
-**Option2: Setup Python environment**
-
-First we need to install the dependencies. Run the following commands:
+Next we need to install the dependencies. Run the following commands:
 
 ```bash
 pip install -r requirements.txt
@@ -111,11 +107,6 @@ Superuser created successfully.
 
 Let’s start the development server and explore it.
 
-Depending on your installation method, there are two options:
-
-
-**Option2: Running Django development server**
-
 ```bash
 python manage.py runserver
 ```
@@ -124,7 +115,7 @@ Now, open a Web browser and go to <http://127.0.0.1:8000/login/>. You should see
 
 <img src="./docs/login_form.png" alt="Login Form" width=400>
 
-### Create a project
+### 1. Create a project
 
 Now, try logging in with the superuser account you created in the previous step. You should see the doccano project list page:
 
@@ -136,7 +127,13 @@ There is no project created yet. To create your project, make sure you’re in t
 
 In this step, you can select three project types: text classificatioin, sequence labeling and sequence to sequence. You should select a type with your purpose.
 
-### Import Data
+### 2. Define labels
+
+Click `Labels` button in left bar to define your own labels. You should see the label editor page. In label editor page, you can create labels by specifying label text, shortcut key, background color and text color.
+
+<img src="./docs/label_editor.png" alt="Edit label" width=600>
+
+### 3. Import Data
 
 After creating a project, you will see the "Import Data" page, or click `Import Data` button in the navigation bar. You should see the following screen:
 
@@ -167,20 +164,13 @@ Any other columns (for csv) or keys (for json) are preserved and will be exporte
 
 Once you select a TXT/JSON file on your computer, click `Upload dataset` button. After uploading the dataset file, we will see the `Dataset` page (or click `Dataset` button list in the left bar). This page displays all the documents we uploaded in one project.
 
-### Define labels
-
-Click `Labels` button in left bar to define your own labels. You should see the label editor page. In label editor page, you can create labels by specifying label text, shortcut key, background color and text color.
-
-<img src="./docs/label_editor.png" alt="Edit label" width=600>
-
-
-### Annotation
+### 4. Annotation
 
 Now, you are ready to annotate the texts. Just click the `Annotate Data` button in the navigation bar, you can start to annotate the documents you uploaded.
 
 <img src="./docs/annotation.png" alt="Edit label" width=600>
 
-### Export Data
+### 5. Export Data
 
 After the annotation step, you can download the annotated data. Click the `Edit data` button in navigation bar, and then click `Export Data`. You should see below screen:
 

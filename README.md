@@ -175,6 +175,11 @@ and the exported file will look like this:
 ```JSON
 {"doc_id": 2023, "text": "EU rejects German call to boycott British lamb.", "labels": ["news"], "username": "root", "metadata": {"external_id": 1}}
 ```
+### 6. Manage Data
+
+If you want to manage data. Click the `Admin` button in navigation bar. You should see below screen:
+
+<img src="./docs/delete_data.png" alt="Delete Data">
 
 ### Tutorial
 

@@ -2,7 +2,7 @@
 {% load static %}
 {% block annotation-area %}
 <div class="card">
-  <header class="card-header">
+  <header class="card-header" style="position:fixed;">
     <div class="card-header-title has-background-royalblue" style="padding:1.5rem;">
       <div class="field is-grouped is-grouped-multiline">
         <div class="control" v-for="label in labels">
@@ -17,7 +17,7 @@
       </div>
     </div>
   </header>
-  <div class="card-content">
+  <div class="card-content" style="padding-top:6rem">
     <div class="content" v-if="docs[pageNumber] && annotations[pageNumber]">
       <annotator ref="annotator" v-bind:labels="labels" v-bind:entity-positions="annotations[pageNumber]" v-bind:text="docs[pageNumber].text"
         @remove-label="removeLabel" @add-label="addLabel"></annotator>

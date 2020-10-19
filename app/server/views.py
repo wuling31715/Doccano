@@ -28,6 +28,7 @@ from django.db import connection
 logger = logging.getLogger(__name__)
 
 
+
 class IndexView(TemplateView):
     # with connection.cursor() as cursor:
     #     cursor.execute('select * from server_sequenceannotation;')
@@ -140,31 +141,67 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                 label_dict[label[1]] = label[0]
         return label_dict
 
-    def insert_annotation(self, label_dict, project_id):
+    def insert_annotation(self, entry, label_dict, project_id, user_id):
+        entities = entry["entities"]
         with connection.cursor() as cursor:
             command = 'select * from server_document where project_id = {};'.format(project_id)
             cursor.execute(command)
             server_document = cursor.fetchall()
             document_id = server_document[-1][0]
-            annotations_list = eval(server_document[-1][-1])['entities']
-            for annotation in annotations_list:
-                command = """insert into server_sequenceannotation ("prob", "manual", "start_offset", "end_offset", "document_id", "label_id", "user_id") values ({}, {}, {}, {}, {}, {}, {});""".format(0.0, 0, annotation[0], annotation[1], document_id, label_dict[annotation[2]], 1)
+        #     annotations_list = eval(server_document[-1][-1])['entities']
+            if type(entities) == str:
+                entities = eval(entities)
+            for annotation in entities:
+                command = """insert into server_sequenceannotation ("prob", "manual", "start_offset", "end_offset", "document_id", "label_id", "user_id") values ({}, {}, {}, {}, {}, {}, {});""".format(0.0, 0, annotation[0], annotation[1], document_id, label_dict[annotation[2]], user_id)
                 cursor.execute(command)
 
+    def txt_to_dict(self, txt):
+        text = str()
+        for line in txt:
+            line = line.decode('utf-8')
+            text += line
+        dictt = dict()
+        dictt['text'] = text
+        return dictt
+    
+    def csv_to_dict(self, file):
+        form_data = TextIOWrapper(file, encoding='utf-8')
+        reader = csv.reader(form_data)
+        list_dict = list()
+        for row in reader:
+            dictt = dict()
+            dictt["text"] = row[0]
+            dictt["entities"] = row[-1]
+            list_dict.append(dictt)
+        return list_dict
+
     def post(self, request, *args, **kwargs):
+        user_id = request.user.id
         project = get_object_or_404(Project, pk=kwargs.get('project_id'))
         project_id = kwargs.get('project_id')
         import_format = request.POST['format']    
         label_dict = self.label_text_to_id(project_id)    
         try:
             file = request.FILES['file'].file
-            parsed_entries = (json.loads(line) for line in file)
-            for entry in parsed_entries:
+            if import_format == 'txt':
+                entry = self.txt_to_dict(file)
                 self.insert_document(entry, project_id)
-                try:
-                    self.insert_annotation(label_dict, project_id)
-                except:
-                    pass
+            elif import_format == 'csv':
+                parsed_entries = self.csv_to_dict(file)
+                for entry in parsed_entries:
+                    self.insert_document(entry, project_id)
+                    # try:
+                    self.insert_annotation(entry, label_dict, project_id, user_id)
+                    # except:
+                    #     pass                
+            elif import_format == 'json':            
+                parsed_entries = (json.loads(line) for line in file)
+                for entry in parsed_entries:
+                    self.insert_document(entry, project_id)
+                    # try:
+                    self.insert_annotation(entry, label_dict, project_id, user_id)
+                    # except:
+                    #     pass
  
             return HttpResponseRedirect(reverse('dataset', args=[project.id]))
         except DataUpload.ImportFileError as e:

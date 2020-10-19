@@ -187,21 +187,15 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                 self.insert_document(entry, project_id)
             elif import_format == 'csv':
                 parsed_entries = self.csv_to_dict(file)
-                for entry in parsed_entries:
-                    self.insert_document(entry, project_id)
-                    try:
-                        self.insert_annotation(entry, label_dict, project_id, user_id)
-                    except:
-                        pass                
             elif import_format == 'json':            
                 parsed_entries = (json.loads(line) for line in file)
-                for entry in parsed_entries:
-                    self.insert_document(entry, project_id)
-                    try:
-                        self.insert_annotation(entry, label_dict, project_id, user_id)
-                    except:
-                        pass
- 
+            for entry in parsed_entries:
+                self.insert_document(entry, project_id)
+                try:
+                    self.insert_annotation(entry, label_dict, project_id, user_id)
+                except:
+                    pass                
+                
             return HttpResponseRedirect(reverse('dataset', args=[project.id]))
         except DataUpload.ImportFileError as e:
             messages.add_message(request, messages.ERROR, e.message)

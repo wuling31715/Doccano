@@ -1,3 +1,4 @@
+import pandas as pd
 import csv
 import json
 from io import TextIOWrapper
@@ -24,6 +25,7 @@ from .models import Document, Project, Label, Annotation, SequenceAnnotation
 from app import settings
 
 from django.db import connection
+
 
 logger = logging.getLogger(__name__)
 
@@ -154,6 +156,10 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                 command = """insert into server_sequenceannotation ("prob", "manual", "start_offset", "end_offset", "document_id", "label_id", "user_id") values ({}, {}, {}, {}, {}, {}, {});""".format(0.0, 0, annotation[0], annotation[1], document_id, label_dict[annotation[2]], user_id)
                 cursor.execute(command)
 
+    def get_file_format(self, file_name):
+        file_format = file_name.split(".")
+        return file_format[-1]
+
     def txt_to_dict(self, txt):
         text = str()
         for line in txt:
@@ -162,22 +168,25 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         dictt = dict()
         dictt['text'] = text
         return dictt
-    
-    def csv_to_dict(self, file):
-        form_data = TextIOWrapper(file, encoding='utf-8')
-        reader = csv.reader(form_data)
-        list_dict = list()
-        for row in reader:
-            dictt = dict()
-            dictt["text"] = row[0]
-            dictt["entities"] = row[-1]
-            list_dict.append(dictt)
-        return list_dict
-
-    def get_file_format(self, file_name):
-        file_format = file_name.split(".")
-        return file_format[-1]
         
+    def file_to_dict(self, file, file_format):
+        if file_format == 'xlsx':
+            data_frame = pd.read_excel(file)
+        elif file_format == 'csv':
+            data_frame = pd.read_csv(file)
+        dict_list = list()
+        try:
+            for text, entities in zip(data_frame['text'], data_frame['entities']):
+                dictt = dict()
+                dictt['text'] = text
+                dictt['entities'] = entities
+                dict_list.append(dictt)
+        except:
+            for text in data_frame['text']:
+                dictt = dict()
+                dictt['text'] = text
+                dict_list.append(dictt)
+        return dict_list
 
     def post(self, request, *args, **kwargs):
         user_id = request.user.id
@@ -187,16 +196,15 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         label_dict = self.label_text_to_id(project_id)    
         try:
             file_format = self.get_file_format(request.FILES['file'].name)
-            print(file_format)
             file = request.FILES['file'].file            
             if file_format == 'txt':
                 entry = self.txt_to_dict(file)
                 self.insert_document(entry, project_id)
             else:
-                if file_format == 'csv':
-                    parsed_entries = self.csv_to_dict(file)
-                elif file_format == 'json':            
+                if file_format == 'json':            
                     parsed_entries = (json.loads(line) for line in file)
+                else:
+                    parsed_entries = self.file_to_dict(file, file_format)
                 for entry in parsed_entries:
                     self.insert_document(entry, project_id)
                     try:

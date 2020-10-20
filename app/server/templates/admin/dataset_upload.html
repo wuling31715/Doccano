@@ -1,13 +1,14 @@
 {% extends "admin/admin_base.html" %}
 {% load static %}
 {% block content-area %}
+
 <div class="columns">
   <div class="column is-12">
 
     <div class="card">
       <header class="card-header">
         <p class="card-header-title">
-          Import text items
+          Import Data
         </p>
         <a href="#" class="card-header-icon" aria-label="more options">
           <span class="icon">
@@ -17,21 +18,24 @@
       </header>
       <div class="card-content">
         <p>
-          <b>To annotate texts, you first need to import a set of text items to annotate it.</b>
+          <b>Support Format</b>
+          <br>
+          <br>
         </p>
-        <ul.is-unstyled>
-          <li>CSV file: file must contain a header with a text column or be one-column csv file.</li>
-          <li>JSON file: each line should contain a json object with at least one key 'text', which contains a text.</li>
-        </ul.is-unstyled>
+        
+        <p>
+          1. TXT
+          <br>
+          2. EXCEL: header = [ text / entities ]
+          <br>
+          3. CSV: header = [ text / entities ]
+          <br>
+          4. JSON: header = [ text / entities ]
+        </p>
         <form action="" method="post" enctype="multipart/form-data">
           {% csrf_token %}
           <div class="section">
             <div class="control">
-              <!-- <label class="radio mb10">
-                <input type="radio" name="format" value="json" checked> Upload a JSON file from your computer<br>
-                <input type="radio" name="format" value="csv" checked> Upload a CSV file from your computer<br>
-                <input type="radio" name="format" value="txt" checked> Upload a TXT file from your computer<br> -->
-               </label>
               <div class="file has-name is-small mb20">
                 <label class="file-label">
                   <input class="file-input" type="file" ref="file" name="file" required v-on:change="handleFileUpload()">
@@ -40,7 +44,7 @@
                       <i class="fas fa-upload"></i>
                     </span>
                     <span class="file-label">
-                      CSV / JSON / TXT
+                      TXT / EXCEL / CSV / JSON
                     </span>
                   </span>
                   <span class="file-name">

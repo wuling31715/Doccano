@@ -174,28 +174,36 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
             list_dict.append(dictt)
         return list_dict
 
+    def get_file_format(self, file_name):
+        file_format = file_name.split(".")
+        return file_format[-1]
+        
+
     def post(self, request, *args, **kwargs):
         user_id = request.user.id
         project = get_object_or_404(Project, pk=kwargs.get('project_id'))
         project_id = kwargs.get('project_id')
-        import_format = request.POST['format']    
+        # import_format = request.POST['format']    
         label_dict = self.label_text_to_id(project_id)    
         try:
-            file = request.FILES['file'].file
-            if import_format == 'txt':
+            file_format = self.get_file_format(request.FILES['file'].name)
+            print(file_format)
+            file = request.FILES['file'].file            
+            if file_format == 'txt':
                 entry = self.txt_to_dict(file)
                 self.insert_document(entry, project_id)
-            elif import_format == 'csv':
-                parsed_entries = self.csv_to_dict(file)
-            elif import_format == 'json':            
-                parsed_entries = (json.loads(line) for line in file)
-            for entry in parsed_entries:
-                self.insert_document(entry, project_id)
-                try:
-                    self.insert_annotation(entry, label_dict, project_id, user_id)
-                except:
-                    pass                
-                
+            else:
+                if file_format == 'csv':
+                    parsed_entries = self.csv_to_dict(file)
+                elif file_format == 'json':            
+                    parsed_entries = (json.loads(line) for line in file)
+                for entry in parsed_entries:
+                    self.insert_document(entry, project_id)
+                    try:
+                        self.insert_annotation(entry, label_dict, project_id, user_id)
+                    except:
+                        pass                
+            
             return HttpResponseRedirect(reverse('dataset', args=[project.id]))
         except DataUpload.ImportFileError as e:
             messages.add_message(request, messages.ERROR, e.message)

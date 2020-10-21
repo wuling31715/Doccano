@@ -49,7 +49,7 @@ class ProjectsView(LoginRequiredMixin, CreateView):
 
 class DatasetView(SuperUserMixin, LoginRequiredMixin, ListView):
     template_name = 'admin/dataset.html'
-    paginate_by = 10
+    paginate_by = 100
 
     def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])

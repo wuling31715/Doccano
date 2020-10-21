@@ -82,6 +82,7 @@
             <i class="fa fa-check" v-show="annotations[index] && annotations[index].length"></i>
           </span>
           <span class="name">[[ doc.text.slice(0, 60) ]]...</span>
+          <p>[[ doc.id ]]</p>
         </a>
       </div>
     </div>
@@ -109,13 +110,13 @@
       <div class="column is-8">
         <span class="ml10"><strong>[[ total - remaining ]]</strong></span>/<span>[[ total ]]</span>
       </div>
-      <div class="column is-1 has-text-right">
-        <a class="button" @click="isActive=!isActive">
+      <!-- <div class="column is-1 has-text-right">
+        <a class="button" href="#">
           <span class="icon">
-            <i class="fas fa-book"></i>
+            <i class="fa fa-trash"></i>
           </span>
         </a>
-      </div>
+      </div> -->
     </div>
 
     {% block annotation-area %} {% endblock %}

@@ -1,6 +1,7 @@
 {% extends "admin/admin_base.html" %}
 {% load static %}
 {% block content-area %}
+
 <div class="card">
   <header class="card-header">
     <p class="card-header-title">
@@ -25,6 +26,13 @@
         <tr>
           <td>{{ forloop.counter0|add:page_obj.start_index }}</td>
           <td>{{ doc.text|truncatechars:200 }}</td>
+          <td>
+          <form action="delete/{{ doc.id }}" method="post" name="delete" enctype="multipart/form-data" >
+            {% csrf_token %}            
+            <button type="submit" class="button "><i type="submit" class="fa fa-trash" aria-hidden="true"></i></button>          
+          </form>
+          </td>
+          <td style="display: none;">{{ doc.id }}</td>          
         </tr>
         {% endfor %}
       </tbody>

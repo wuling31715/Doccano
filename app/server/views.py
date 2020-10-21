@@ -32,9 +32,6 @@ logger = logging.getLogger(__name__)
 
 
 class IndexView(TemplateView):
-    # with connection.cursor() as cursor:
-    #     cursor.execute('select * from server_sequenceannotation;')
-    #     print(cursor.fetchall())
     template_name = 'index.html'
 
 
@@ -52,12 +49,11 @@ class ProjectsView(LoginRequiredMixin, CreateView):
 
 class DatasetView(SuperUserMixin, LoginRequiredMixin, ListView):
     template_name = 'admin/dataset.html'
-    paginate_by = 5
+    paginate_by = 10
 
     def get_queryset(self):
         project = get_object_or_404(Project, pk=self.kwargs['project_id'])
         return project.documents.all()
-
 
 class LabelView(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/label.html'
@@ -220,6 +216,15 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
             logger.exception(e)
             messages.add_message(request, messages.ERROR, e)
             return HttpResponseRedirect(reverse('upload', args=[project.id]))
+
+def delete(request, *args, **kwargs):
+    # project = get_object_or_404(Project, pk=kwargs.get('project_id'))
+    project_id = kwargs.get('project_id')
+    document_id = kwargs.get('document_id')
+    with connection.cursor() as cursor:
+        command = """delete from server_document where id = {};""".format(document_id)
+        cursor.execute(command)
+    return HttpResponseRedirect(reverse('dataset', args=[project_id]))
 
 class DataDownload(SuperUserMixin, LoginRequiredMixin, TemplateView):
     template_name = 'admin/dataset_download.html'

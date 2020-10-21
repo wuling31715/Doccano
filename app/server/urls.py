@@ -8,6 +8,8 @@ from .views import DemoTextClassification, DemoNamedEntityRecognition, DemoTrans
 from .api import ProjectViewSet, LabelList, ProjectStatsAPI, LabelDetail, \
     AnnotationList, AnnotationDetail, DocumentList
 
+from . import views
+
 router = routers.DefaultRouter()
 router.register(r'projects', ProjectViewSet)
 
@@ -25,6 +27,7 @@ urlpatterns = [
     path('projects/<int:project_id>/download_file', DataDownloadFile.as_view(), name='download_file'),
     path('projects/<int:project_id>/', ProjectView.as_view(), name='annotation'),
     path('projects/<int:project_id>/docs/', DatasetView.as_view(), name='dataset'),
+    path('projects/<int:project_id>/docs/delete/<int:document_id>', views.delete, name='delete'),
     path('projects/<int:project_id>/docs/create', DataUpload.as_view(), name='upload'),
     path('projects/<int:project_id>/labels/', LabelView.as_view(), name='label-management'),
     path('projects/<int:project_id>/stats/', StatsView.as_view(), name='stats'),

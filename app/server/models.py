@@ -6,6 +6,9 @@ from django.contrib.auth.models import User
 from django.contrib.staticfiles.storage import staticfiles_storage
 from .utils import get_key_choices
 
+from django.urls import reverse, path
+from django.http import HttpResponse, HttpResponseRedirect
+
 
 class Project(models.Model):
     DOCUMENT_CLASSIFICATION = 'DocumentClassification'
@@ -27,7 +30,8 @@ class Project(models.Model):
     project_type = models.CharField(max_length=30, choices=PROJECT_CHOICES)
 
     def get_absolute_url(self):
-        return reverse('upload', args=[self.id])
+        return reverse('label-management', args=[self.id])
+        # return reverse('upload', args=[self.id])
 
     def is_type_of(self, project_type):
         return project_type == self.project_type
@@ -208,7 +212,7 @@ class Document(models.Model):
         annotations = self.get_annotations()
         entities = [(a.start_offset, a.end_offset, a.label.text) for a in annotations]
         username = annotations[0].user.username
-        dataset = {'doc_id': self.id, 'text': self.text, 'entities': entities, 'username': username, 'metadata': json.loads(self.metadata)}
+        dataset = {'doc_id': self.id, 'text': self.text, 'labels': entities, 'username': username, 'metadata': json.loads(self.metadata)}
         return dataset
 
     def make_dataset_for_seq2seq_json(self):

@@ -4,7 +4,20 @@
 <link rel="stylesheet" href="{% static 'css/admin.css' %}">
 {% endblock %}
 {% block content-area %}
-<div id="editor" class="columns is-gapless">
+
+<div class="card">
+  <header class="card-header">
+    <p class="card-header-title">
+      Guideline
+    </p>
+    <a href="#" class="card-header-icon" aria-label="more options">
+      <span class="icon">
+        <i class="fas fa-angle-down" aria-hidden="true"></i>
+      </span>
+    </a>
+  </header>
+
+<!-- <div id="editor" class="columns is-gapless">
   <div class="column is-6">
     <textarea class="editorMarkdown_textarea" :value="input" @input="update"></textarea>
   </div>
@@ -19,4 +32,4 @@
 <script src="https://unpkg.com/marked@0.3.6"></script>
 <script src="https://unpkg.com/lodash@4.16.0"></script>
 <script src="{% static 'bundle/guideline.js' %}"></script>
-{% endblock %}
+{% endblock %} -->

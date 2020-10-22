@@ -17,10 +17,8 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 
-
 from .permissions import SuperUserMixin
 from .forms import ProjectForm
-from mixer.backend.django import mixer
 from .models import Document, Project, Label, Annotation, SequenceAnnotation
 from app import settings
 
@@ -110,7 +108,7 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         copy = entry.copy()
         del copy[text_key]
         try: 
-            # return copy["entities"]
+            # return copy["labels"]
             return json.dumps(copy)
         except:
             return {}
@@ -140,15 +138,15 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         return label_dict
 
     def insert_annotation(self, entry, label_dict, project_id, user_id):
-        entities = entry["entities"]
+        labels = entry["labels"]
         with connection.cursor() as cursor:
             command = 'select * from server_document where project_id = {};'.format(project_id)
             cursor.execute(command)
             server_document = cursor.fetchall()
             document_id = server_document[-1][0]
-            if type(entities) == str:
-                entities = eval(entities)
-            for annotation in entities:
+            if type(labels) == str:
+                labels = eval(labels)
+            for annotation in labels:
                 command = """insert into server_sequenceannotation ("prob", "manual", "start_offset", "end_offset", "document_id", "label_id", "user_id") values ({}, {}, {}, {}, {}, {}, {});""".format(0.0, 0, annotation[0], annotation[1], document_id, label_dict[annotation[2]], user_id)
                 cursor.execute(command)
 
@@ -172,10 +170,10 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
             data_frame = pd.read_csv(file)
         dict_list = list()
         try:
-            for text, entities in zip(data_frame['text'], data_frame['entities']):
+            for text, labels in zip(data_frame['text'], data_frame['labels']):
                 dictt = dict()
                 dictt['text'] = text
-                dictt['entities'] = entities
+                dictt['labels'] = labels
                 dict_list.append(dictt)
         except:
             for text in data_frame['text']:
@@ -206,7 +204,7 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                     try:
                         self.insert_annotation(entry, label_dict, project_id, user_id)
                     except:
-                        pass                
+                        pass
             
             return HttpResponseRedirect(reverse('dataset', args=[project.id]))
         except DataUpload.ImportFileError as e:
@@ -222,6 +220,7 @@ def delete(request, *args, **kwargs):
     project_id = kwargs.get('project_id')
     document_id = kwargs.get('document_id')
     with connection.cursor() as cursor:
+        cursor.execute("PRAGMA foreign_keys=OFF;")
         command = """delete from server_document where id = {};""".format(document_id)
         cursor.execute(command)
     return HttpResponseRedirect(reverse('dataset', args=[project_id]))

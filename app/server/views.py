@@ -247,15 +247,18 @@ class DataDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         project_id = self.kwargs['project_id']
         project = get_object_or_404(Project, pk=project_id)
-        docs = project.get_documents(is_null=False).distinct()
         export_format = request.GET.get('format')
+        if 'all' in export_format:
+            docs = project.get_documents(is_null=False, user=True).distinct()
+        else: # labeled
+            docs = project.get_documents(is_null=False).distinct()
         filename = '_'.join(project.name.lower().split())
         try:
-            if export_format == 'excel':
+            if 'excel' in export_format:
                 response = self.get_excel(filename, docs)
-            elif export_format == 'csv':
+            elif 'csv' in export_format:
                 response = self.get_csv(filename, docs)
-            elif export_format == 'json':
+            elif 'json' in export_format:
                 response = self.get_json(filename, docs)
             return response
         except Exception as e:

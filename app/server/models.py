@@ -67,6 +67,9 @@ class Project(models.Model):
 
     def get_documents(self, is_null=True, user=None):
         docs = self.documents.all()
+        if is_null==False and user!=None:
+            return docs
+
         if self.is_type_of(Project.DOCUMENT_CLASSIFICATION):
             if user:
                 docs = docs.exclude(doc_annotations__user=user)
@@ -76,7 +79,7 @@ class Project(models.Model):
             if user:
                 docs = docs.exclude(seq_annotations__user=user)
             else:
-                docs = docs.filter(seq_annotations__isnull=is_null)
+                docs = docs.filter(seq_annotations__isnull=is_null)            
         elif self.is_type_of(Project.Seq2seq):
             if user:
                 docs = docs.exclude(seq2seq_annotations__user=user)
@@ -209,8 +212,9 @@ class Document(models.Model):
     def make_dataset_for_sequence_labeling_json(self):
         annotations = self.get_annotations()
         entities = [(a.start_offset, a.end_offset, a.label.text) for a in annotations]
-        username = annotations[0].user.username
-        dataset = {'doc_id': self.id, 'text': self.text, 'labels': entities, 'username': username, 'metadata': json.loads(self.metadata)}
+        # username = annotations[0].user.username
+        # dataset = {'doc_id': self.id, 'text': self.text, 'labels': entities, 'username': username, 'metadata': json.loads(self.metadata)}
+        dataset = {'text': self.text, 'labels': entities}
         return dataset
 
     def make_dataset_for_seq2seq_json(self):

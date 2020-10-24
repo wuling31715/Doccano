@@ -1,6 +1,7 @@
 {% extends "admin/admin_base.html" %}
 {% load static %}
 {% block content-area %}
+  
 
 <div class="columns">
   <div class="column is-12">
@@ -22,16 +23,49 @@
           <br>
           <br>
         </p>
+        <style>
+          table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+          }
+          th, td {
+            padding: 5px;
+            
+          }
+          th {
+            text-align: center;
+          }
+        </style>
         
-        <p>
-          1. TXT
-          <br>
-          2. EXCEL: header = [ text / entities ]
-          <br>
-          3. CSV: header = [ text / entities ]
-          <br>
-          4. JSON: header = [ text / entities ]
-        </p>
+        <table style="width:50%">
+          <tr>
+            <th style="padding: 5px; text-align: center;"></th>
+            <th style="padding: 5px; text-align: center;">text</th>
+            <th style="padding: 5px; text-align: center;">labels</th>
+          </tr>
+          <tr>
+            <td style="padding: 5px; text-align: center;">TXT</td>
+            <td style="padding: 5px; text-align: center;">O</td>
+            <td style="padding: 5px; text-align: center;">X</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px; text-align: center;">EXCEL</td>
+            <td style="padding: 5px; text-align: center;">O</td>
+            <td style="padding: 5px; text-align: center;">O</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px; text-align: center;">CSV</td>
+            <td style="padding: 5px; text-align: center;">O</td>
+            <td style="padding: 5px; text-align: center;">O</td>
+          </tr>
+          <tr>
+            <td style="padding: 5px; text-align: center;">JSON</td>
+            <td style="padding: 5px; text-align: center;">O</td>
+            <td style="padding: 5px; text-align: center;">O</td>
+          </tr>
+        </table>
+        
+        
         <form action="" method="post" enctype="multipart/form-data">
           {% csrf_token %}
           <div class="section">

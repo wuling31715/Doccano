@@ -6,7 +6,7 @@
     <div class="card">
       <header class="card-header">
         <p class="card-header-title">
-          Export text items
+          Export Data
         </p>
         <a href="#" class="card-header-icon" aria-label="more options">
           <span class="icon">
@@ -15,8 +15,9 @@
         </a>
       </header>
       <div class="card-content">
+
         <p>
-          <b>Support Format</b>
+          <b>Download labeled datasets</b>
         </p>
 
           <form action="{% url 'download_file' view.kwargs.project_id %}" method="get">
@@ -40,6 +41,33 @@
               </ul>
             </div>
           </form>
+
+          <p>
+            <b>Download all datasets</b>
+          </p>
+  
+          <form action="{% url 'download_file' view.kwargs.project_id %}" method="get">
+            <div class="section">
+              <ul>
+                  <li>
+                    <a class="control">
+                      <button type="submit" class="button is-primary button-margin " name="format" value="excel_all">Download Excel</button>
+                    </a>
+                  </li>
+                  <li>
+                    <a class="control">
+                      <button type="submit" class="button is-primary button-margin " name="format" value="csv_all">Download CSV</button>
+                    </a>
+                  </li>
+                  <li>
+                  <a class="control">
+                    <button type="submit" class="button is-primary button-margin " name="format" value="json_all">Download JSON</button>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </form>
+
       </div>
     </div>
   </div>

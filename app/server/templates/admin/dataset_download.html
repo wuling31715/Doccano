@@ -16,23 +16,25 @@
       </header>
       <div class="card-content">
         <p>
-          <b>There are two data format you can download, the CSV and JSON.</b>
+          <b>Support Format</b>
         </p>
-        <p>
-          If you import as a JSON with line breaks and download it as CSV, the line breaks will render on the result.
-          We recommend you download it as JSON file.
-        </p>
+
           <form action="{% url 'download_file' view.kwargs.project_id %}" method="get">
             <div class="section">
               <ul>
                   <li>
                     <a class="control">
-                      <button type="submit" class="button is-primary button-margin " name="format" value="csv">Download CSV File</button>
+                      <button type="submit" class="button is-primary button-margin " name="format" value="excel">Download Excel</button>
+                    </a>
+                  </li>
+                  <li>
+                    <a class="control">
+                      <button type="submit" class="button is-primary button-margin " name="format" value="csv">Download CSV</button>
                     </a>
                   </li>
                   <li>
                   <a class="control">
-                    <button type="submit" class="button is-primary button-margin " name="format" value="json">Download JSON File</button>
+                    <button type="submit" class="button is-primary button-margin " name="format" value="json">Download JSON</button>
                   </a>
                 </li>
               </ul>

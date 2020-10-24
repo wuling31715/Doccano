@@ -147,6 +147,10 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
             if type(labels) == str:
                 labels = eval(labels)
             for annotation in labels:
+                # print(annotation)
+                # print(document_id) 
+                # print(label_dict[annotation[2]])
+                # print(user_id)
                 command = """insert into server_sequenceannotation ("prob", "manual", "start_offset", "end_offset", "document_id", "label_id", "user_id") values ({}, {}, {}, {}, {}, {}, {});""".format(0.0, 0, annotation[0], annotation[1], document_id, label_dict[annotation[2]], user_id)
                 cursor.execute(command)
 
@@ -171,15 +175,23 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
         dict_list = list()
         try:
             for text, labels in zip(data_frame['text'], data_frame['labels']):
-                dictt = dict()
-                dictt['text'] = text
-                dictt['labels'] = labels
-                dict_list.append(dictt)
+                entry_dict = dict()
+                entry_dict['text'] = text
+                if type(labels) == str:
+                    labels = eval(labels)
+                label_list = list()
+                for label in labels:
+                    try:
+                        label_list.append(eval(label))
+                    except:
+                        label_list.append(label)
+                entry_dict['labels'] = label_list
+                dict_list.append(entry_dict)
         except:
             for text in data_frame['text']:
-                dictt = dict()
-                dictt['text'] = text
-                dict_list.append(dictt)
+                entry_dict = dict()
+                entry_dict['text'] = text
+                dict_list.append(entry_dict)
         return dict_list
 
     def post(self, request, *args, **kwargs):
@@ -198,6 +210,7 @@ class DataUpload(SuperUserMixin, LoginRequiredMixin, TemplateView):
                 if file_format == 'json':            
                     parsed_entries = (json.loads(line) for line in file)
                 else:
+                    # xlsx / csv
                     parsed_entries = self.file_to_dict(file, file_format)
                 for entry in parsed_entries:
                     self.insert_document(entry, project_id)
@@ -238,7 +251,9 @@ class DataDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
         export_format = request.GET.get('format')
         filename = '_'.join(project.name.lower().split())
         try:
-            if export_format == 'csv':
+            if export_format == 'excel':
+                response = self.get_excel(filename, docs)
+            elif export_format == 'csv':
                 response = self.get_csv(filename, docs)
             elif export_format == 'json':
                 response = self.get_json(filename, docs)
@@ -248,12 +263,24 @@ class DataDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
             messages.add_message(request, messages.ERROR, e)
             return HttpResponseRedirect(reverse('download', args=[project.id]))
 
-    def get_csv(self, filename, docs):
+    def get_excel(self, filename, docs):        
+        response = HttpResponse(content_type='text/excel')
+        response['Content-Disposition'] = 'attachment; filename="{}.xlsx"'.format(filename)
+        doc_list = list()
+        for d in docs:
+            doc_list.append(d.to_csv())
+        df = pd.DataFrame(doc_list, columns=['text', 'labels'])
+        df.to_excel(response, index = False)
+        return response
+
+    def get_csv(self, filename, docs):        
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="{}.csv"'.format(filename)
-        writer = csv.writer(response)
+        doc_list = list()
         for d in docs:
-            writer.writerows(d.to_csv())
+            doc_list.append(d.to_csv())
+        df = pd.DataFrame(doc_list, columns=['text', 'labels'])
+        df.to_csv(response, index = False)
         return response
 
     def get_json(self, filename, docs):

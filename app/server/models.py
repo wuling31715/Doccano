@@ -175,13 +175,11 @@ class Document(models.Model):
 
     def make_dataset_for_sequence_labeling(self):
         annotations = self.get_annotations()
-        dataset = [[self.id, ch, 'O', self.metadata] for ch in self.text]
+        label_list = list()
         for a in annotations:
-            for i in range(a.start_offset, a.end_offset):
-                if i == a.start_offset:
-                    dataset[i][2] = 'B-{}'.format(a.label.text)
-                else:
-                    dataset[i][2] = 'I-{}'.format(a.label.text)
+            label_list.append([a.start_offset, a.end_offset, a.label.text])
+        # dataset = [self.id, self.text, label_list]
+        dataset = [self.text, label_list]
         return dataset
 
     def make_dataset_for_seq2seq(self):

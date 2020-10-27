@@ -182,7 +182,7 @@ class Document(models.Model):
         for a in annotations:
             label_list.append([a.start_offset, a.end_offset, a.label.text])
         # dataset = [self.id, self.text, label_list]
-        dataset = [self.text, label_list]
+        dataset = [self.text, label_list, self.metadata]
         return dataset
 
     def make_dataset_for_seq2seq(self):
@@ -214,7 +214,7 @@ class Document(models.Model):
         entities = [(a.start_offset, a.end_offset, a.label.text) for a in annotations]
         # username = annotations[0].user.username
         # dataset = {'doc_id': self.id, 'text': self.text, 'labels': entities, 'username': username, 'metadata': json.loads(self.metadata)}
-        dataset = {'text': self.text, 'labels': entities}
+        dataset = {'text': self.text, 'labels': entities, 'metadata': json.loads(self.metadata)}
         return dataset
 
     def make_dataset_for_seq2seq_json(self):

@@ -272,7 +272,7 @@ class DataDownloadFile(SuperUserMixin, LoginRequiredMixin, View):
         doc_list = list()
         for d in docs:
             doc_list.append(d.to_csv())
-        df = pd.DataFrame(doc_list, columns=['text', 'labels'])
+        df = pd.DataFrame(doc_list, columns=['text', 'labels', 'metadata'])
         df.to_excel(response, index = False)
         return response
 

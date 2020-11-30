@@ -155,8 +155,14 @@ p {
 
 .card-header-title {
   padding: 1.5rem;
+  font-size: 3rem;
 }
 
+.card-header-category {
+	padding-left: 1.5rem;
+	font-size: large;
+  }
+  
 .navbar-link::after {
   border-color: white;
 }

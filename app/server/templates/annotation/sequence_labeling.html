@@ -10,14 +10,20 @@
             <a class="tag is-medium" v-bind:style="{ color: label.text_color, backgroundColor: label.background_color }" v-on:click="annotate(label.id)"
               v-shortkey.once=" replaceNull(label.shortcut) " @shortkey="annotate(label.id)">
               [[ label.text ]]
-            </a>
+            </a>            
             <span class="tag is-medium"><kbd>[[ label.shortcut | simpleShortcut ]]</kbd></span>
           </div>
         </div>
       </div>
     </div>
   </header>
-  <div class="card-content" style="padding-top:6rem">
+
+  <p class="card-header-title" style="padding-top:10rem">
+    <a href="" target="_blank"></a>
+  </p>
+  <p class="card-header-category"></p>
+  
+  <div class="card-content" style="padding-top:1.5rem">
     <div class="content" v-if="docs[pageNumber] && annotations[pageNumber]">
       <annotator ref="annotator" v-bind:labels="labels" v-bind:entity-positions="annotations[pageNumber]" v-bind:text="docs[pageNumber].text"
         @remove-label="removeLabel" @add-label="addLabel"></annotator>
